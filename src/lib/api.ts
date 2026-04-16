@@ -32,7 +32,7 @@ export type Rink = {
 const isBrowser = typeof window !== "undefined";
 const API_BASE = isBrowser ? "" : (process.env.NEXT_PUBLIC_API_URL || "https://puckfinder-api.onrender.com");
 
-export async function fetchSessions(days = 7): Promise<Session[]> {
+export async function fetchSessions(days = 30): Promise<Session[]> {
   const url = isBrowser
     ? `/api/sessions?days=${days}`
     : `${API_BASE}/sessions/upcoming?days=${days}`;
