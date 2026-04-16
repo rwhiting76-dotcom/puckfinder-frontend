@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import type { Session, Rink } from "@/lib/api";
 import { triggerScrapeAll } from "@/lib/api";
 
@@ -246,8 +247,9 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
       </main>
 
       {/* Footer */}
-      <footer className="text-center text-zinc-700 text-[11px] py-6 border-t border-zinc-900 safe-bottom">
+      <footer className="text-center text-zinc-600 text-[11px] py-6 border-t border-zinc-900 safe-bottom">
         <p>PuckFinder · Schedules from rink websites · Verify before you go</p>
+        <p className="mt-1"><Link href="/contact" className="text-zinc-500 hover:text-zinc-400 transition">Contact</Link></p>
       </footer>
     </div>
   );
