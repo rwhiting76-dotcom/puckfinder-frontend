@@ -51,6 +51,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
+        <script defer src="https://cloud.umami.is/script.js" data-website-id="708def64-73a8-4736-81fd-520827bcb674"></script>
       </head>
       <body className="min-h-full flex flex-col bg-zinc-950 text-white">
         {children}
