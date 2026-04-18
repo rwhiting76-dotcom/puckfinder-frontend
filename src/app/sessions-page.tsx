@@ -104,7 +104,7 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
                 <span className="text-blue-400">Puck</span>Finder
               </h1>
               <p className="text-[11px] text-zinc-500 leading-tight">
-                {totalUpcoming} upcoming sessions · SLC area
+                {totalUpcoming} upcoming sessions · SLC area · <Link href="/contact" className="text-zinc-400 hover:text-blue-400 transition">Contact</Link>
               </p>
             </div>
           </div>
