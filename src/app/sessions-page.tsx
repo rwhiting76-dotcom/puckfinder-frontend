@@ -34,7 +34,7 @@ function availabilityBadge(avail: string | null) {
     full: "bg-red-500/15 text-red-400 ring-1 ring-red-500/25",
     unknown: "bg-zinc-500/15 text-zinc-400 ring-1 ring-zinc-500/25",
   };
-  const labels: Record<string, string> = { open: "Open", limited: "Limited", full: "Full" };
+  const labels: Record<string, string> = { open: "Available", limited: "Limited", full: "Full" };
   const cls = colors[avail] || colors.unknown;
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold uppercase tracking-wider ${cls}`}>
