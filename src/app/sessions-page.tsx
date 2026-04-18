@@ -26,22 +26,7 @@ function formatTime(t: string) {
   return t.replace(/\s+/g, " ").trim();
 }
 
-function availabilityBadge(avail: string | null) {
-  if (!avail) return null;
-  const colors: Record<string, string> = {
-    open: "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/25",
-    limited: "bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/25",
-    full: "bg-red-500/15 text-red-400 ring-1 ring-red-500/25",
-    unknown: "bg-zinc-500/15 text-zinc-400 ring-1 ring-zinc-500/25",
-  };
-  const labels: Record<string, string> = { open: "Available", limited: "Limited", full: "Full" };
-  const cls = colors[avail] || colors.unknown;
-  return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold uppercase tracking-wider ${cls}`}>
-      {labels[avail] || avail}
-    </span>
-  );
-}
+
 
 type Props = {
   initialSessions: Session[];
@@ -209,7 +194,7 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
                         <div className="text-sm font-semibold text-white whitespace-nowrap">
                           {formatTime(s.start_time)}
                         </div>
-                        <div className="text-sm font-medium text-zinc-200 truncate">
+                        <div className="text-sm font-semibold text-blue-300 truncate">
                           {s.rink_name}
                         </div>
                       </div>
@@ -226,7 +211,7 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
                             ${s.price.toFixed(0)}
                           </span>
                         )}
-                        {availabilityBadge(s.availability)}
+
                         {regLink && (
                           <a
                             href={regLink}
