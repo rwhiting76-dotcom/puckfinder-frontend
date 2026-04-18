@@ -104,14 +104,21 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
                 <span className="text-blue-400">Puck</span>Finder
               </h1>
               <p className="text-[11px] text-zinc-500 leading-tight">
-                {totalUpcoming} upcoming sessions · SLC area · <Link href="/contact" className="text-zinc-400 hover:text-blue-400 transition">Contact</Link>
+                {totalUpcoming} upcoming sessions · SLC area
               </p>
             </div>
           </div>
-          <button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700/80 text-xs font-medium border border-zinc-700/50 transition-all active:scale-95 disabled:opacity-50"
+          <div className="flex items-center gap-2">
+            <Link
+              href="/contact"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700/80 text-xs font-medium border border-zinc-700/50 transition-all active:scale-95 text-zinc-300"
+            >
+              Contact
+            </Link>
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700/80 text-xs font-medium border border-zinc-700/50 transition-all active:scale-95 disabled:opacity-50"
           >
             <span className={refreshing ? "animate-spin" : ""}>↻</span>
             {refreshing ? "Updating…" : "Refresh"}
