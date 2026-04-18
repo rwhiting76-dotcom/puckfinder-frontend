@@ -234,7 +234,7 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-0.5 text-[11px] font-medium text-blue-400 hover:text-blue-300 transition ml-auto"
                           >
-                            Register ↗
+                            Website ↗
                           </a>
                         )}
                       </div>
