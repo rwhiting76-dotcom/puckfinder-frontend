@@ -36,7 +36,7 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
         <div className="text-center">
-          <img src="/favicon.svg" alt="PuckFinder" className="w-10 h-10 mb-3" />
+          <img src="/favicon.svg" alt="PuckFinder" className="w-20 h-20 mb-4 mx-auto" />
           <p className="text-zinc-300 font-medium">Finding stick & puck times...</p>
           <p className="text-zinc-500 text-sm mt-2">First visit? The server may need a moment to wake up.</p>
         </div>
@@ -48,7 +48,7 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
         <div className="text-center">
-          <img src="/favicon.svg" alt="PuckFinder" className="w-10 h-10 mb-3" />
+          <img src="/favicon.svg" alt="PuckFinder" className="w-16 h-16 mb-4 mx-auto" />
           <p className="text-zinc-400 text-sm px-6">{error}</p>
           <button
             onClick={load}
