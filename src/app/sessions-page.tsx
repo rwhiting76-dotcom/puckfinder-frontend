@@ -98,7 +98,7 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
       <header className="sticky top-0 z-20 bg-zinc-950/90 backdrop-blur-lg border-b border-zinc-800/80 safe-top">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="text-2xl">🏒</div>
+            <img src="/favicon.svg" alt="PuckFinder" className="w-7 h-7" />
             <div>
               <h1 className="text-lg font-bold tracking-tight leading-tight">
                 <span className="text-blue-400">Puck</span>Finder
