@@ -61,3 +61,69 @@ export async function triggerScrapeAll(): Promise<any> {
   if (!res.ok) throw new Error("Scrape all failed");
   return res.json();
 }
+
+// ── Coach types ─────────────────────────────────────────────────────────────
+
+export type Coach = {
+  id: number;
+  slug: string;
+  name: string;
+  title: string | null;
+  photo_url: string | null;
+  bio: string | null;
+  location: string | null;
+  rink_affiliations: string[] | null;
+  specialties: string[] | null;
+  lesson_types: string[] | null;
+  price_range: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  website_url: string | null;
+  instagram_url: string | null;
+  featured: boolean;
+};
+
+export type CoachApplication = {
+  name: string;
+  title?: string;
+  photo_url?: string;
+  bio?: string;
+  location?: string;
+  rink_affiliations?: string[];
+  specialties?: string[];
+  lesson_types?: string[];
+  price_range?: string;
+  contact_email?: string;
+  contact_phone?: string;
+  website_url?: string;
+  instagram_url?: string;
+};
+
+export async function fetchCoaches(filters?: { specialty?: string; lesson_type?: string }): Promise<Coach[]> {
+  const params = new URLSearchParams();
+  if (filters?.specialty) params.set("specialty", filters.specialty);
+  if (filters?.lesson_type) params.set("lesson_type", filters.lesson_type);
+  const qs = params.toString();
+  const url = isBrowser ? `/api/coaches${qs ? `?${qs}` : ""}` : `${API_BASE}/coaches${qs ? `?${qs}` : ""}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Coaches fetch failed: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchCoach(slug: string): Promise<Coach> {
+  const url = isBrowser ? `/api/coaches/${slug}` : `${API_BASE}/coaches/${slug}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Coach fetch failed: ${res.status}`);
+  return res.json();
+}
+
+export async function submitCoachApplication(data: CoachApplication): Promise<Coach> {
+  const url = isBrowser ? "/api/coaches/apply" : `${API_BASE}/coaches/apply`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(`Coach application failed: ${res.status}`);
+  return res.json();
+}

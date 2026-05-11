@@ -110,6 +110,12 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
           </div>
           <div className="flex items-center gap-2">
             <Link
+              href="/coaching"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700/80 text-xs font-medium border border-zinc-700/50 transition-all active:scale-95 text-zinc-300"
+            >
+              Coaching
+            </Link>
+            <Link
               href="/contact"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700/80 text-xs font-medium border border-zinc-700/50 transition-all active:scale-95 text-zinc-300"
             >
