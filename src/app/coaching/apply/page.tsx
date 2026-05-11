@@ -66,7 +66,22 @@ export default function CoachApplyPage() {
     setSubmitting(true);
     setError(null);
     try {
+      // Save to DB
       await submitCoachApplication(form);
+      // Notify Ryan via Formspree (same as contact form)
+      try {
+        const notifData = new FormData();
+        notifData.append("name", form.name);
+        notifData.append("email", form.contact_email || "(not provided)");
+        notifData.append("message", `New coach application on PuckFinder!\n\nName: ${form.name}\nTitle: ${form.title || "(none)"}\nLocation: ${form.location || "(none)"}\nSpecialties: ${form.specialties?.join(", ") || "(none)"}\nLesson Types: ${form.lesson_types?.join(", ") || "(none)"}\nPrice Range: ${form.price_range || "(none)"}\nEmail: ${form.contact_email || "(none)"}\nPhone: ${form.contact_phone || "(none)"}\nWebsite: ${form.website_url || "(none)"}\nInstagram: ${form.instagram_url || "(none)"}\n\nApprove at: /admin/coaches/pending`);
+        await fetch("https://formspree.io/f/xnjljrrn", {
+          method: "POST",
+          body: notifData,
+          headers: { Accept: "application/json" },
+        });
+      } catch {
+        // Notification failure shouldn't block the application
+      }
       setSubmitted(true);
     } catch (err: any) {
       setError(err?.message || "Failed to submit application. Please try again.");
