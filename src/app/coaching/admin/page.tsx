@@ -111,6 +111,16 @@ function CoachCard({ coach, onAction }: { coach: Coach; onAction: (id: number, a
         >
           View Profile
         </Link>
+        <button
+          onClick={() => {
+            if (confirm(`Remove ${coach.name}? This cannot be undone.`)) {
+              onAction(coach.id, "delete");
+            }
+          }}
+          className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 text-xs font-medium border border-red-500/30 hover:bg-red-500/30 transition-all active:scale-95"
+        >
+          🗑️ Remove
+        </button>
       </div>
     </div>
   );
@@ -176,11 +186,19 @@ export default function CoachingAdminPage() {
     setActionLoading(coachId);
     const key = adminKey;
     try {
-      const res = await fetch(`/api/coaches/admin/${coachId}/${action}`, {
-        method: "PUT",
-        headers: { "X-Admin-Key": key },
-      });
-      if (res.ok) {
+      let res: Response;
+      if (action === "delete") {
+        res = await fetch(`/api/coaches/admin/${coachId}/delete`, {
+          method: "DELETE",
+          headers: { "X-Admin-Key": key },
+        });
+      } else {
+        res = await fetch(`/api/coaches/admin/${coachId}/${action}`, {
+          method: "PUT",
+          headers: { "X-Admin-Key": key },
+        });
+      }
+      if (res.ok || res.status === 204) {
         loadCoaches(key);
       } else {
         alert(`Action failed: ${res.status}`);
