@@ -135,7 +135,7 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
 
       {/* Rink Filters */}
       <div className="sticky top-[57px] z-10 bg-zinc-950/90 backdrop-blur-lg border-b border-zinc-800/50">
-        <div className="max-w-2xl mx-auto px-4 py-2 flex gap-1.5 overflow-x-auto no-scrollbar">
+        <div className="max-w-2xl mx-auto px-4 py-2 flex gap-1.5 overflow-x-auto scrollbar-thin">
           <button
             onClick={() => setSelectedRink(null)}
             className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95 ${
