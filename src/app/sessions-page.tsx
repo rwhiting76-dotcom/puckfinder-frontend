@@ -31,12 +31,13 @@ function formatTime(t: string) {
 type Props = {
   initialSessions: Session[];
   rinks: Rink[];
+  refreshing?: boolean;
 };
 
-export default function SessionsPage({ initialSessions, rinks }: Props) {
+export default function SessionsPage({ initialSessions, rinks, refreshing }: Props) {
   const [sessions, setSessions] = useState(initialSessions);
   const [selectedRink, setSelectedRink] = useState<number | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
+  const [localRefreshing, setLocalRefreshing] = useState(false);
 
   const rinkMap: Record<number, Rink> = {};
   for (const r of rinks) rinkMap[r.id] = r;
@@ -58,7 +59,7 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
   const sortedDates = useMemo(() => Object.keys(grouped).sort(), [grouped]);
 
   const handleRefresh = async () => {
-    setRefreshing(true);
+    setLocalRefreshing(true);
     try {
       await triggerScrapeAll();
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -70,7 +71,7 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
     } catch (e) {
       console.error("Refresh failed", e);
     }
-    setRefreshing(false);
+    setLocalRefreshing(false);
   };
 
   function getRegLink(session: Session): string | null {
@@ -96,6 +97,11 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-20 bg-zinc-950/90 backdrop-blur-lg border-b border-zinc-800/80 safe-top">
+        {refreshing && (
+          <div className="h-0.5 bg-zinc-800 w-full">
+            <div className="h-full bg-blue-500/60 animate-[loading_1.5s_ease-in-out_infinite]" style={{ width: "40%" }} />
+          </div>
+        )}
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <img src="/favicon.svg" alt="PuckFinder" className="w-7 h-7" />
@@ -123,11 +129,11 @@ export default function SessionsPage({ initialSessions, rinks }: Props) {
             </Link>
             <button
               onClick={handleRefresh}
-              disabled={refreshing}
+              disabled={localRefreshing}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700/80 text-xs font-medium border border-zinc-700/50 transition-all active:scale-95 disabled:opacity-50"
             >
-              <span className={refreshing ? "animate-spin" : ""}>↻</span>
-              {refreshing ? "Updating…" : "Refresh"}
+              <span className={localRefreshing ? "animate-spin" : ""}>↻</span>
+              {localRefreshing ? "Updating…" : "Refresh"}
             </button>
           </div>
         </div>
