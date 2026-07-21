@@ -29,7 +29,7 @@ function formatTime(t: string) {
 
 
 
-type DateFilter = "all" | "today" | "weekend" | "week";
+type DateFilter = "all" | "today" | "tomorrow" | "weekend" | "week";
 
 function isWeekendDate(dateStr: string): boolean {
   const d = new Date(dateStr + "T00:00:00");
@@ -50,6 +50,14 @@ function isToday(dateStr: string): boolean {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return d.getTime() === today.getTime();
+}
+
+function isTomorrow(dateStr: string): boolean {
+  const d = new Date(dateStr + "T00:00:00");
+  const tomorrow = new Date();
+  tomorrow.setHours(0, 0, 0, 0);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return d.getTime() === tomorrow.getTime();
 }
 
 type Props = {
@@ -82,6 +90,7 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
   const filtered = useMemo(() => {
     let list = selectedRink ? sessions.filter((s) => s.rink_id === selectedRink) : sessions;
     if (dateFilter === "today") list = list.filter((s) => isToday(s.date));
+    if (dateFilter === "tomorrow") list = list.filter((s) => isTomorrow(s.date));
     if (dateFilter === "weekend") list = list.filter((s) => isWeekendDate(s.date));
     if (dateFilter === "week") list = list.filter((s) => isWithinDays(s.date, 7));
     return list;
@@ -238,6 +247,7 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
           {[
             { key: "all", label: "All dates" },
             { key: "today", label: "Today" },
+            { key: "tomorrow", label: "Tomorrow" },
             { key: "weekend", label: "This weekend" },
             { key: "week", label: "Next 7 days" },
           ].map((opt) => (
