@@ -29,6 +29,29 @@ function formatTime(t: string) {
 
 
 
+type DateFilter = "all" | "today" | "weekend" | "week";
+
+function isWeekendDate(dateStr: string): boolean {
+  const d = new Date(dateStr + "T00:00:00");
+  const day = d.getDay();
+  return day === 0 || day === 6;
+}
+
+function isWithinDays(dateStr: string, days: number): boolean {
+  const d = new Date(dateStr + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diff = (d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+  return diff >= 0 && diff < days;
+}
+
+function isToday(dateStr: string): boolean {
+  const d = new Date(dateStr + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return d.getTime() === today.getTime();
+}
+
 type Props = {
   initialSessions: Session[];
   rinks: Rink[];
@@ -38,6 +61,7 @@ type Props = {
 export default function SessionsPage({ initialSessions, rinks, refreshing }: Props) {
   const [sessions, setSessions] = useState(initialSessions);
   const [selectedRink, setSelectedRink] = useState<number | null>(null);
+  const [dateFilter, setDateFilter] = useState<DateFilter>("all");
   const [localRefreshing, setLocalRefreshing] = useState(false);
   const [coaches, setCoaches] = useState<Coach[]>([]);
 
@@ -55,10 +79,13 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
   const rinkMap: Record<number, Rink> = {};
   for (const r of rinks) rinkMap[r.id] = r;
 
-  const filtered = useMemo(
-    () => (selectedRink ? sessions.filter((s) => s.rink_id === selectedRink) : sessions),
-    [sessions, selectedRink]
-  );
+  const filtered = useMemo(() => {
+    let list = selectedRink ? sessions.filter((s) => s.rink_id === selectedRink) : sessions;
+    if (dateFilter === "today") list = list.filter((s) => isToday(s.date));
+    if (dateFilter === "weekend") list = list.filter((s) => isWeekendDate(s.date));
+    if (dateFilter === "week") list = list.filter((s) => isWithinDays(s.date, 7));
+    return list;
+  }, [sessions, selectedRink, dateFilter]);
 
   const grouped = useMemo(() => {
     const g: Record<string, Session[]> = {};
@@ -204,6 +231,30 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
           </div>
         </div>
       )}
+
+      {/* Date Filters */}
+      <div className="bg-zinc-950/90 backdrop-blur-lg border-b border-zinc-800/50">
+        <div className="max-w-2xl mx-auto px-4 py-2 flex gap-1.5 overflow-x-auto scrollbar-thin">
+          {[
+            { key: "all", label: "All dates" },
+            { key: "today", label: "Today" },
+            { key: "weekend", label: "This weekend" },
+            { key: "week", label: "Next 7 days" },
+          ].map((opt) => (
+            <button
+              key={opt.key}
+              onClick={() => setDateFilter((prev) => (prev === (opt.key as DateFilter) ? "all" : (opt.key as DateFilter)))}
+              className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95 ${
+                dateFilter === opt.key
+                  ? "bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30"
+                  : "bg-zinc-800/50 text-zinc-400 hover:text-zinc-300"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Rink Filters */}
       <div className="sticky top-[57px] z-10 bg-zinc-950/90 backdrop-blur-lg border-b border-zinc-800/50">
