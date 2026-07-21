@@ -82,6 +82,18 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
     return null;
   }
 
+  const selectedRinkName = useMemo(() => {
+    if (!selectedRink) return null;
+    return rinks.find((r) => r.id === selectedRink)?.name || null;
+  }, [selectedRink, rinks]);
+
+  // Upcoming sessions outside the current filter, sorted by nearest
+  const fallbackSessions = useMemo(() => {
+    if (!selectedRink) return [];
+    const filtered = sessions.filter((s) => s.rink_id !== selectedRink);
+    return filtered.slice(0, 3);
+  }, [selectedRink, sessions]);
+
   // Count sessions per rink for the filter badges
   const rinkCounts = useMemo(() => {
     const counts: Record<number, number> = {};
@@ -178,10 +190,82 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
       {/* Sessions List */}
       <main className="flex-1 max-w-2xl mx-auto px-4 pb-24 safe-bottom">
         {sortedDates.length === 0 && (
-          <div className="text-center text-zinc-500 py-20">
-            <div className="text-4xl mb-3">🥅</div>
-            <p className="text-lg font-medium">No sessions found</p>
-            <p className="text-sm mt-1">Try refreshing or selecting a different rink</p>
+          <div className="text-center py-16 px-4">
+            <div className="text-4xl mb-4">🥅</div>
+            {selectedRink ? (
+              <>
+                <p className="text-lg font-semibold text-zinc-300">
+                  No sessions at {selectedRinkName?.replace(" Recreation Center", "")?.replace(" Ice Center", "")?.replace(" Ice Arena", "")?.replace(" County Sports Complex", "")}
+                </p>
+                <p className="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">
+                  No Stick & Puck or Drop In times posted there in the next 14 days.
+                </p>
+                <button
+                  onClick={() => setSelectedRink(null)}
+                  className="mt-4 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-sm font-medium border border-blue-500/30 hover:bg-blue-500/30 transition"
+                >
+                  Show all rinks
+                </button>
+
+                {fallbackSessions.length > 0 && (
+                  <div className="mt-8 text-left">
+                    <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-2 text-center">
+                      Upcoming at other rinks
+                    </p>
+                    <div className="space-y-2">
+                      {fallbackSessions.map((s) => {
+                        const regLink = getRegLink(s);
+                        return (
+                          <div
+                            key={s.id}
+                            className="rounded-xl bg-zinc-900/70 border border-zinc-800/60 px-3 py-2.5 text-left"
+                          >
+                            <div className="flex items-baseline gap-2">
+                              <div className="text-sm font-semibold text-white whitespace-nowrap">{formatTime(s.start_time)}</div>
+                              <div className="text-sm font-semibold text-blue-300 truncate">{s.rink_name}</div>
+                            </div>
+                            <div className="flex items-center gap-1.5 flex-wrap mt-1">
+                              <span className="text-xs text-zinc-500">
+                                {formatDate(s.date)} · {s.session_type}
+                              </span>
+                              {s.price != null && (
+                                <span className="text-xs text-zinc-400 font-medium">${s.price.toFixed(0)}</span>
+                              )}
+                              {regLink && (
+                                <a
+                                  href={regLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-0.5 text-[11px] font-medium text-blue-400 hover:text-blue-300 transition ml-auto"
+                                >
+                                  Website ↗
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <p className="text-lg font-semibold text-zinc-300">No upcoming sessions</p>
+                <p className="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">
+                  We don’t see any Stick & Puck or Drop In times posted in the next 14 days.
+                </p>
+                <div className="mt-4 flex items-center justify-center gap-2">
+                  <button
+                    onClick={handleRefresh}
+                    disabled={localRefreshing}
+                    className="px-4 py-2 rounded-lg bg-zinc-800 text-zinc-300 text-sm font-medium border border-zinc-700 hover:bg-zinc-700 transition disabled:opacity-50"
+                  >
+                    {localRefreshing ? "Checking…" : "Refresh data"}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
 
