@@ -70,6 +70,7 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
   const [sessions, setSessions] = useState(initialSessions);
   const [selectedRink, setSelectedRink] = useState<number | null>(null);
   const [dateFilter, setDateFilter] = useState<DateFilter>("all");
+  const [expandedId, setExpandedId] = useState<number | null>(null);
   const [localRefreshing, setLocalRefreshing] = useState(false);
   const [coaches, setCoaches] = useState<Coach[]>([]);
 
@@ -406,7 +407,8 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
                   return (
                     <div
                       key={s.id}
-                      className="rounded-xl bg-zinc-900/70 border border-zinc-800/60 px-3 py-2.5 hover:bg-zinc-800/70 hover:border-zinc-700/50 transition-all"
+                      onClick={() => setExpandedId((prev) => (prev === s.id ? null : s.id))}
+                      className={`rounded-xl bg-zinc-900/70 border border-zinc-800/60 px-3 py-2.5 hover:bg-zinc-800/70 hover:border-zinc-700/50 transition-all cursor-pointer ${expandedId === s.id ? "bg-zinc-800/70 border-zinc-700/60" : ""}`}
                     >
                       {/* Top: time + rink name */}
                       <div className="flex items-baseline gap-2">
@@ -415,6 +417,9 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
                         </div>
                         <div className="text-sm font-semibold text-blue-300 truncate">
                           {s.rink_name}
+                        </div>
+                        <div className="ml-auto text-zinc-500 text-xs">
+                          {expandedId === s.id ? "▲" : "▼"}
                         </div>
                       </div>
                       {/* Bottom: session type + badges */}
@@ -436,12 +441,70 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
                             href={regLink}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
                             className="inline-flex items-center gap-0.5 text-[11px] font-medium text-blue-400 hover:text-blue-300 transition ml-auto"
                           >
                             Website ↗
                           </a>
                         )}
                       </div>
+
+                      {/* Expanded details */}
+                      {expandedId === s.id && (
+                        <div className="mt-3 pt-3 border-t border-zinc-800/60 text-left space-y-2">
+                          {s.notes && (
+                            <p className="text-xs text-zinc-400 leading-relaxed">
+                              {s.notes}
+                            </p>
+                          )}
+
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500">
+                            {s.price != null && (
+                              <span><span className="text-zinc-600">Price:</span> ${s.price.toFixed(0)}</span>
+                            )}
+                            {s.availability && (
+                              <span><span className="text-zinc-600">Availability:</span> {s.availability}</span>
+                            )}
+                            {s.source && (
+                              <span><span className="text-zinc-600">Source:</span> {s.source}</span>
+                            )}
+                          </div>
+
+                          {rinkMap[s.rink_id] && (
+                            <div className="text-xs text-zinc-500 space-y-0.5">
+                              {rinkMap[s.rink_id].address && <p>{rinkMap[s.rink_id].address}</p>}
+                              {(rinkMap[s.rink_id].phone || rinkMap[s.rink_id].website) && (
+                                <p className="flex flex-wrap gap-x-3">
+                                  {rinkMap[s.rink_id].phone && <span>{rinkMap[s.rink_id].phone}</span>}
+                                  {rinkMap[s.rink_id].website && (
+                                    <a
+                                      href={(rinkMap[s.rink_id].website || "").startsWith("http") ? (rinkMap[s.rink_id].website || "") : `https://${rinkMap[s.rink_id].website}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="text-blue-400 hover:text-blue-300"
+                                    >
+                                      {(rinkMap[s.rink_id].website || "").replace(/^https?:\/\//, "")}
+                                    </a>
+                                  )}
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {regLink && (
+                            <a
+                              href={regLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1.5 mt-1 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-medium border border-blue-500/30 hover:bg-blue-500/30 transition"
+                            >
+                              Register / More info ↗
+                            </a>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
