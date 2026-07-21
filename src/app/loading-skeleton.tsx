@@ -7,7 +7,7 @@ export default function LoadingSkeleton() {
       <header className="sticky top-0 z-20 bg-zinc-950/90 backdrop-blur-lg border-b border-zinc-800/80">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <img src="/favicon.svg" alt="PuckFinder" className="w-7 h-7" />
+            <img src="/favicon.svg" alt="PuckFinder" className="w-9 h-9" />
             <div>
               <div className="h-4 w-28 bg-zinc-800 rounded" />
               <div className="h-2.5 w-36 bg-zinc-800/60 rounded mt-1.5" />

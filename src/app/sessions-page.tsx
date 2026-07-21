@@ -104,7 +104,7 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
         )}
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <img src="/favicon.svg" alt="PuckFinder" className="w-7 h-7" />
+            <img src="/favicon.svg" alt="PuckFinder" className="w-9 h-9" />
             <div>
               <h1 className="text-lg font-bold tracking-tight leading-tight">
                 <span className="text-blue-400">Puck</span>Finder
