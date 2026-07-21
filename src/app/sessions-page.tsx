@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import type { Session, Rink } from "@/lib/api";
-import { triggerScrapeAll } from "@/lib/api";
+import { triggerScrapeAll, fetchCoaches } from "@/lib/api";
+import type { Coach } from "@/lib/api";
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr + "T00:00:00");
@@ -38,6 +39,18 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
   const [sessions, setSessions] = useState(initialSessions);
   const [selectedRink, setSelectedRink] = useState<number | null>(null);
   const [localRefreshing, setLocalRefreshing] = useState(false);
+  const [coaches, setCoaches] = useState<Coach[]>([]);
+
+  useEffect(() => {
+    fetchCoaches({}).then(setCoaches).catch(() => setCoaches([]));
+  }, []);
+
+  const featuredCoaches = useMemo(() => {
+    const active = coaches.filter((c) => !c.contact_email || c.contact_email);
+    const featured = active.filter((c) => c.featured);
+    const pool = featured.length > 0 ? featured : active;
+    return pool.slice(0, 3);
+  }, [coaches]);
 
   const rinkMap: Record<number, Rink> = {};
   for (const r of rinks) rinkMap[r.id] = r;
@@ -150,6 +163,47 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
           </div>
         </div>
       </header>
+
+      {/* Coaching CTA */}
+      {featuredCoaches.length > 0 && (
+        <div className="bg-zinc-900/40 border-b border-zinc-800/50">
+          <div className="max-w-2xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <p className="text-xs font-medium text-blue-400 uppercase tracking-wide">
+                  Improve your game
+                </p>
+                <p className="text-sm text-zinc-300 mt-0.5">
+                  Local coaches offering private and group lessons
+                </p>
+              </div>
+              <Link
+                href="/coaching"
+                className="shrink-0 px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-medium border border-blue-500/30 hover:bg-blue-500/30 transition"
+              >
+                View coaches →
+              </Link>
+            </div>
+            <div className="flex gap-2 overflow-x-auto scrollbar-thin pb-1">
+              {featuredCoaches.map((coach) => (
+                <Link
+                  key={coach.id}
+                  href={`/coaching/${coach.slug}`}
+                  className="shrink-0 w-48 rounded-xl bg-zinc-900/70 border border-zinc-800/60 px-3 py-2.5 hover:bg-zinc-800/70 hover:border-zinc-700/50 transition"
+                >
+                  <p className="text-sm font-semibold text-zinc-200 truncate">{coach.name}</p>
+                  <p className="text-xs text-zinc-500 truncate">{coach.title || "Private coach"}</p>
+                  {coach.specialties && coach.specialties.length > 0 && (
+                    <p className="text-[11px] text-blue-400 mt-1 truncate">
+                      {coach.specialties.slice(0, 2).join(" · ")}
+                    </p>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Rink Filters */}
       <div className="sticky top-[57px] z-10 bg-zinc-950/90 backdrop-blur-lg border-b border-zinc-800/50">
