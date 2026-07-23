@@ -182,6 +182,37 @@ export default function CoachingAdminPage() {
     setLoading(false);
   }
 
+  async function notifyCoachApproved(coach: Coach) {
+    if (!coach.contact_email) return;
+    const profileUrl = `https://puckfinder.hockey/coaching/${coach.slug}`;
+    const notifData = new FormData();
+    notifData.append("name", coach.name);
+    notifData.append("email", coach.contact_email);
+    notifData.append(
+      "message",
+      `Hi ${coach.name},
+
+Great news — your coaching profile has been approved and is now live on PuckFinder! 🎉
+
+${profileUrl}
+
+Players can now find you, view your specialties, and reach out to book lessons.
+
+Thanks for joining PuckFinder!
+
+— Ryan & the PuckFinder team`
+    );
+    try {
+      await fetch("https://formspree.io/f/xnjljrrn", {
+        method: "POST",
+        body: notifData,
+        headers: { Accept: "application/json" },
+      });
+    } catch {
+      // Notification failure shouldn't block the approval
+    }
+  }
+
   async function handleAction(coachId: number, action: string) {
     setActionLoading(coachId);
     const key = adminKey;
@@ -199,6 +230,10 @@ export default function CoachingAdminPage() {
         });
       }
       if (res.ok || res.status === 204) {
+        if (action === "approve") {
+          const coach = pending.find((c) => c.id === coachId) ?? approved.find((c) => c.id === coachId);
+          if (coach) await notifyCoachApproved(coach);
+        }
         loadCoaches(key);
       } else {
         alert(`Action failed: ${res.status}`);
