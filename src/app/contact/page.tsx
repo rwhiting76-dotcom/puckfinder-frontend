@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Mail, MessageSquare } from "lucide-react";
+import SiteHeader from "@/components/site-header";
 
 export default function ContactPage() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -33,28 +35,22 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-20 bg-zinc-950/90 backdrop-blur-lg border-b border-zinc-800/80">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-2.5">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="text-2xl">🏒</div>
-            <div>
-              <h1 className="text-lg font-bold tracking-tight leading-tight">
-                <span className="text-blue-400">Puck</span>Finder
-              </h1>
-            </div>
-          </Link>
-        </div>
-      </header>
+      <SiteHeader size="sm" />
 
-      <main className="flex-1 max-w-lg mx-auto px-4 py-8">
-        <h2 className="text-xl font-bold mb-2">Contact Us</h2>
+      <main className="flex-1 max-w-lg mx-auto px-4 py-8 w-full">
+        <div className="flex items-center gap-2 mb-2">
+          <MessageSquare className="w-5 h-5 text-blue-400" />
+          <h2 className="text-xl font-bold">Contact Us</h2>
+        </div>
         <p className="text-zinc-400 text-sm mb-6">
           Questions, suggestions, or found a bug? Drop us a note.
         </p>
 
         {status === "sent" ? (
           <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-6 text-center">
-            <div className="text-2xl mb-2">✅</div>
+            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-emerald-500/20 mb-2">
+              <Mail className="w-5 h-5 text-emerald-400" />
+            </div>
             <p className="text-emerald-400 font-medium">Message sent!</p>
             <p className="text-zinc-400 text-sm mt-1">We&apos;ll get back to you soon.</p>
             <button

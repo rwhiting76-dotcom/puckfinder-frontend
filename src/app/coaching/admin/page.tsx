@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Check, Lock, MapPin, Star, Trash2, ExternalLink } from "lucide-react";
+import SiteHeader from "@/components/site-header";
 
 const ADMIN_KEY_STORAGE = "pf_admin_key";
 
@@ -46,13 +48,13 @@ function CoachCard({ coach, onAction }: { coach: Coach; onAction: (id: number, a
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-semibold text-white">{coach.name}</h3>
             {coach.featured && (
-              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
-                ⭐ Featured
+              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 inline-flex items-center gap-1">
+                <Star className="w-3 h-3" /> Featured
               </span>
             )}
           </div>
           {coach.title && <p className="text-sm text-blue-400">{coach.title}</p>}
-          {coach.location && <p className="text-xs text-zinc-500 mt-0.5">📍 {coach.location}</p>}
+          {coach.location && <p className="text-xs text-zinc-500 mt-0.5 inline-flex items-center gap-1"><MapPin className="w-3 h-3" /> {coach.location}</p>}
         </div>
       </div>
 
@@ -90,26 +92,26 @@ function CoachCard({ coach, onAction }: { coach: Coach; onAction: (id: number, a
         {!coach.approved && (
           <button
             onClick={() => onAction(coach.id, "approve")}
-            className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 text-xs font-medium border border-emerald-500/30 hover:bg-emerald-500/30 transition-all active:scale-95"
+            className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 text-xs font-medium border border-emerald-500/30 hover:bg-emerald-500/30 transition-all active:scale-95 inline-flex items-center gap-1"
           >
-            ✅ Approve
+            <Check className="w-3.5 h-3.5" /> Approve
           </button>
         )}
         <button
           onClick={() => onAction(coach.id, "feature")}
-          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all active:scale-95 ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all active:scale-95 inline-flex items-center gap-1 ${
             coach.featured
               ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/30"
               : "bg-zinc-800/50 text-zinc-400 border-zinc-700/50 hover:text-zinc-300"
           }`}
         >
-          {coach.featured ? "⭐ Unfeature" : "☆ Feature"}
+          <Star className="w-3.5 h-3.5" /> {coach.featured ? "Unfeature" : "Feature"}
         </button>
         <Link
           href={`/coaching/${coach.slug}`}
-          className="px-3 py-1.5 rounded-lg bg-zinc-800/50 text-zinc-400 text-xs font-medium border border-zinc-700/50 hover:text-zinc-300 transition-all"
+          className="px-3 py-1.5 rounded-lg bg-zinc-800/50 text-zinc-400 text-xs font-medium border border-zinc-700/50 hover:text-zinc-300 transition-all inline-flex items-center gap-1"
         >
-          View Profile
+          <ExternalLink className="w-3.5 h-3.5" /> View
         </Link>
         <button
           onClick={() => {
@@ -117,9 +119,9 @@ function CoachCard({ coach, onAction }: { coach: Coach; onAction: (id: number, a
               onAction(coach.id, "delete");
             }
           }}
-          className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 text-xs font-medium border border-red-500/30 hover:bg-red-500/30 transition-all active:scale-95"
+          className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 text-xs font-medium border border-red-500/30 hover:bg-red-500/30 transition-all active:scale-95 inline-flex items-center gap-1"
         >
-          🗑️ Remove
+          <Trash2 className="w-3.5 h-3.5" /> Remove
         </button>
       </div>
     </div>
@@ -249,7 +251,9 @@ Thanks for joining PuckFinder!
     return (
       <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center px-4">
         <div className="max-w-sm w-full">
-          <h1 className="text-xl font-bold text-center mb-2">🔒 Coach Admin</h1>
+          <h1 className="text-xl font-bold text-center mb-2 inline-flex items-center justify-center gap-2">
+            <Lock className="w-5 h-5 text-zinc-400" /> Coach Admin
+          </h1>
           <p className="text-sm text-zinc-500 text-center mb-6">Enter your admin key to manage coach applications.</p>
           {authError && (
             <div className="rounded-xl bg-red-500/10 border border-red-500/30 px-3 py-2 text-sm text-red-400 mb-4">
@@ -284,28 +288,22 @@ Thanks for joining PuckFinder!
   // Admin panel
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
-      <header className="sticky top-0 z-20 bg-zinc-950/90 backdrop-blur-lg border-b border-zinc-800/80 safe-top">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-bold tracking-tight">🔒 Coach Admin</h1>
-            <p className="text-[11px] text-zinc-500">Manage coach applications</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/coaching"
-              className="px-3 py-1.5 rounded-lg bg-zinc-800/80 text-xs font-medium text-zinc-300 border border-zinc-700/50 hover:bg-zinc-700/80 transition"
-            >
-              ← Coaches
-            </Link>
-            <button
-              onClick={() => { setIsAuthed(false); setAdminKey(""); localStorage.removeItem(ADMIN_KEY_STORAGE); }}
-              className="px-3 py-1.5 rounded-lg bg-zinc-800/80 text-xs font-medium text-zinc-400 border border-zinc-700/50 hover:bg-zinc-700/80 transition"
-            >
-              Lock
-            </button>
-          </div>
+      <SiteHeader size="sm">
+        <div className="flex items-center gap-2">
+          <Link
+            href="/coaching"
+            className="px-3 py-1.5 rounded-lg bg-zinc-800/80 text-xs font-medium text-zinc-300 border border-zinc-700/50 hover:bg-zinc-700/80 transition"
+          >
+            ← Coaches
+          </Link>
+          <button
+            onClick={() => { setIsAuthed(false); setAdminKey(""); localStorage.removeItem(ADMIN_KEY_STORAGE); }}
+            className="px-3 py-1.5 rounded-lg bg-zinc-800/80 text-xs font-medium text-zinc-400 border border-zinc-700/50 hover:bg-zinc-700/80 transition"
+          >
+            Lock
+          </button>
         </div>
-      </header>
+      </SiteHeader>
 
       <main className="flex-1 max-w-2xl mx-auto px-4 pb-24 safe-bottom w-full">
         {/* Pending */}
@@ -316,7 +314,7 @@ Thanks for joining PuckFinder!
           {loading ? (
             <p className="text-zinc-500 text-sm">Loading...</p>
           ) : pending.length === 0 ? (
-            <p className="text-zinc-600 text-sm py-4 text-center">No pending applications ✨</p>
+            <p className="text-zinc-600 text-sm py-4 text-center">No pending applications</p>
           ) : (
             <div className="space-y-3">
               {pending.map((coach) => (

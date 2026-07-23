@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { Camera, Dices, ExternalLink, Frown, Globe, Mail, MapPin, Phone, Star } from "lucide-react";
+import SiteHeader from "@/components/site-header";
 import { fetchCoach } from "@/lib/api";
 import type { Coach } from "@/lib/api";
 
@@ -25,7 +27,7 @@ export default function CoachProfilePage() {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-4xl mb-3">🏒</div>
+          <img src="/favicon.svg" alt="PuckFinder" className="w-12 h-12 mx-auto mb-4 animate-pulse" />
           <p className="text-zinc-400">Loading coach profile...</p>
         </div>
       </div>
@@ -35,12 +37,14 @@ export default function CoachProfilePage() {
   if (error || !coach) {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-4xl mb-3">⚠️</div>
+        <div className="text-center px-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 border border-red-500/30 mb-4">
+            <Frown className="w-8 h-8 text-red-400" />
+          </div>
           <p className="text-zinc-400">{error || "Coach not found"}</p>
           <Link
             href="/coaching"
-            className="inline-block mt-4 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-sm border border-blue-500/30 hover:bg-blue-500/30"
+            className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-sm border border-blue-500/30 hover:bg-blue-500/30"
           >
             Browse all coaches
           </Link>
@@ -58,17 +62,11 @@ export default function CoachProfilePage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
       {/* Back nav */}
-      <header className="sticky top-0 z-20 bg-zinc-950/90 backdrop-blur-lg border-b border-zinc-800/80 safe-top">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/coaching" className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition">
-            ← Back to Coaches
-          </Link>
-          <Link href="/" className="flex items-center gap-1.5">
-            <img src="/favicon.svg" alt="PuckFinder" className="w-5 h-5" />
-            <span className="text-xs text-zinc-500">PuckFinder</span>
-          </Link>
-        </div>
-      </header>
+      <SiteHeader size="sm">
+        <Link href="/coaching" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700/80 text-xs font-medium text-zinc-300 border border-zinc-700/50 transition-all active:scale-95">
+          ← Back to Coaches
+        </Link>
+      </SiteHeader>
 
       <main className="flex-1 max-w-2xl mx-auto px-4 pb-24 safe-bottom w-full">
         {/* Coach header */}
@@ -88,8 +86,8 @@ export default function CoachProfilePage() {
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold tracking-tight">{coach.name}</h1>
               {coach.featured && (
-                <span className="shrink-0 text-[11px] font-medium px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
-                  ⭐ Featured
+                <span className="shrink-0 text-[11px] font-medium px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 inline-flex items-center gap-1">
+                  <Star className="w-3 h-3" /> Featured
                 </span>
               )}
             </div>
@@ -97,7 +95,9 @@ export default function CoachProfilePage() {
               <p className="text-blue-400 font-medium mt-0.5">{coach.title}</p>
             )}
             {coach.location && (
-              <p className="text-sm text-zinc-500 mt-1">📍 {coach.location}</p>
+              <p className="text-sm text-zinc-500 mt-1 flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5" /> {coach.location}
+              </p>
             )}
           </div>
         </div>
@@ -155,9 +155,9 @@ export default function CoachProfilePage() {
               {coach.rink_affiliations.map((r) => (
                 <span
                   key={r}
-                  className="px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-300 text-sm"
+                  className="px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-300 text-sm inline-flex items-center gap-1"
                 >
-                  🏒 {r}
+                  <Dices className="w-3.5 h-3.5 text-zinc-500" /> {r}
                 </span>
               ))}
             </div>
@@ -171,18 +171,18 @@ export default function CoachProfilePage() {
             {coach.contact_email && (
               <a
                 href={`mailto:${coach.contact_email}`}
-                className="flex items-center gap-2 rounded-xl bg-zinc-900/70 border border-zinc-800/60 px-4 py-3 hover:bg-zinc-800/70 hover:border-zinc-700/50 transition-all"
+                className="flex items-center gap-3 rounded-xl bg-zinc-900/70 border border-zinc-800/60 px-4 py-3 hover:bg-zinc-800/70 hover:border-zinc-700/50 transition-all"
               >
-                <span className="text-lg">✉️</span>
+                <Mail className="w-5 h-5 text-blue-400" />
                 <span className="text-sm text-zinc-300">{coach.contact_email}</span>
               </a>
             )}
             {coach.contact_phone && (
               <a
                 href={`tel:${coach.contact_phone}`}
-                className="flex items-center gap-2 rounded-xl bg-zinc-900/70 border border-zinc-800/60 px-4 py-3 hover:bg-zinc-800/70 hover:border-zinc-700/50 transition-all"
+                className="flex items-center gap-3 rounded-xl bg-zinc-900/70 border border-zinc-800/60 px-4 py-3 hover:bg-zinc-800/70 hover:border-zinc-700/50 transition-all"
               >
-                <span className="text-lg">📞</span>
+                <Phone className="w-5 h-5 text-emerald-400" />
                 <span className="text-sm text-zinc-300">{coach.contact_phone}</span>
               </a>
             )}
@@ -191,11 +191,11 @@ export default function CoachProfilePage() {
                 href={coach.website_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-xl bg-zinc-900/70 border border-zinc-800/60 px-4 py-3 hover:bg-zinc-800/70 hover:border-zinc-700/50 transition-all"
+                className="flex items-center gap-3 rounded-xl bg-zinc-900/70 border border-zinc-800/60 px-4 py-3 hover:bg-zinc-800/70 hover:border-zinc-700/50 transition-all"
               >
-                <span className="text-lg">🌐</span>
+                <Globe className="w-5 h-5 text-blue-400" />
                 <span className="text-sm text-blue-400 truncate">{coach.website_url}</span>
-                <span className="text-zinc-600 ml-auto">↗</span>
+                <ExternalLink className="w-4 h-4 text-zinc-600 ml-auto" />
               </a>
             )}
             {coach.instagram_url && (
@@ -203,11 +203,11 @@ export default function CoachProfilePage() {
                 href={coach.instagram_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-xl bg-zinc-900/70 border border-zinc-800/60 px-4 py-3 hover:bg-zinc-800/70 hover:border-zinc-700/50 transition-all"
+                className="flex items-center gap-3 rounded-xl bg-zinc-900/70 border border-zinc-800/60 px-4 py-3 hover:bg-zinc-800/70 hover:border-zinc-700/50 transition-all"
               >
-                <span className="text-lg">📸</span>
+                <Camera className="w-5 h-5 text-pink-400" />
                 <span className="text-sm text-blue-400 truncate">Instagram</span>
-                <span className="text-zinc-600 ml-auto">↗</span>
+                <ExternalLink className="w-4 h-4 text-zinc-600 ml-auto" />
               </a>
             )}
           </div>

@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import { Dices, Frown, MapPin, Star, Users } from "lucide-react";
+import SiteHeader from "@/components/site-header";
 import { fetchCoaches } from "@/lib/api";
 import type { Coach } from "@/lib/api";
 
@@ -60,7 +62,9 @@ function CoachCard({ coach }: { coach: Coach }) {
               <p className="text-sm text-blue-400 mt-0.5">{coach.title}</p>
             )}
             {coach.location && (
-              <p className="text-xs text-zinc-500 mt-0.5">{coach.location}</p>
+              <p className="text-xs text-zinc-500 mt-0.5 flex items-center gap-1">
+                <MapPin className="w-3 h-3" /> {coach.location}
+              </p>
             )}
             {/* Specialties */}
             {coach.specialties && coach.specialties.length > 0 && (
@@ -138,24 +142,14 @@ export default function CoachingPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-20 bg-zinc-950/90 backdrop-blur-lg border-b border-zinc-800/80 safe-top">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <img src="/favicon.svg" alt="PuckFinder" className="w-7 h-7" />
-            <div>
-              <h1 className="text-lg font-bold tracking-tight leading-tight">
-                <span className="text-blue-400">Puck</span>Finder
-              </h1>
-            </div>
-          </Link>
-          <Link
-            href="/coaching/apply"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-all active:scale-95"
-          >
-            List Your Coaching
-          </Link>
-        </div>
-      </header>
+      <SiteHeader>
+        <Link
+          href="/coaching/apply"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-all active:scale-95"
+        >
+          List Your Coaching
+        </Link>
+      </SiteHeader>
 
       {/* Title */}
       <div className="max-w-2xl mx-auto px-4 pt-5 pb-2">
@@ -212,18 +206,20 @@ export default function CoachingPage() {
       <main className="flex-1 max-w-2xl mx-auto px-4 pb-24 safe-bottom w-full">
         {loading && (
           <div className="text-center py-20">
-            <div className="text-4xl mb-3">🏒</div>
+            <img src="/favicon.svg" alt="PuckFinder" className="w-12 h-12 mx-auto mb-4 animate-pulse" />
             <p className="text-zinc-400">Loading coaches...</p>
           </div>
         )}
 
         {error && (
-          <div className="text-center py-20">
-            <div className="text-4xl mb-3">⚠️</div>
+          <div className="text-center py-20 px-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 border border-red-500/30 mb-4">
+              <Frown className="w-8 h-8 text-red-400" />
+            </div>
             <p className="text-zinc-400">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-sm border border-blue-500/30 hover:bg-blue-500/30"
+              className="mt-4 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-sm border border-blue-500/30 hover:bg-blue-500/30 inline-flex items-center gap-1.5"
             >
               Retry
             </button>
@@ -231,8 +227,10 @@ export default function CoachingPage() {
         )}
 
         {!loading && !error && filtered.length === 0 && (
-          <div className="text-center py-20">
-            <div className="text-4xl mb-3">🥅</div>
+          <div className="text-center py-20 px-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 mb-4">
+              <Dices className="w-8 h-8 text-zinc-500" />
+            </div>
             <p className="text-lg font-medium text-zinc-300">No coaches found</p>
             <p className="text-sm text-zinc-500 mt-1">
               {coaches.length === 0
@@ -242,9 +240,9 @@ export default function CoachingPage() {
             {coaches.length === 0 && (
               <Link
                 href="/coaching/apply"
-                className="inline-block mt-4 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-sm border border-blue-500/30 hover:bg-blue-500/30"
+                className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-sm border border-blue-500/30 hover:bg-blue-500/30"
               >
-                Be the first coach to list
+                <Users className="w-4 h-4" /> Be the first coach to list
               </Link>
             )}
           </div>
@@ -252,8 +250,8 @@ export default function CoachingPage() {
 
         {!loading && featuredCoaches.length > 0 && (
           <div className="mt-5">
-            <h3 className="text-sm font-semibold text-yellow-400/80 mb-2 px-1">
-              ⭐ Featured Coaches
+            <h3 className="text-sm font-semibold text-yellow-400/80 mb-2 px-1 inline-flex items-center gap-1">
+              <Star className="w-3.5 h-3.5" /> Featured Coaches
             </h3>
             <div className="space-y-2">
               {featuredCoaches.map((coach) => (
