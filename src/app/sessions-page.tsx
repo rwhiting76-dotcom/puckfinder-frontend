@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, Dices, ExternalLink, MapPin, RotateCw } from "lucide-react";
+import { ChevronDown, ChevronUp, Copy, Dices, ExternalLink, MapPin, RotateCw } from "lucide-react";
 import type { Session, Rink } from "@/lib/api";
 import { triggerScrapeAll, fetchCoaches } from "@/lib/api";
 import type { Coach } from "@/lib/api";
@@ -125,13 +125,61 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
     setLocalRefreshing(false);
   };
 
-  function getRegLink(session: Session): string | null {
-    const rink = rinkMap[session.rink_id];
-    if (rink?.website) return rink.website.startsWith("http") ? rink.website : `https://${rink.website}`;
-    if (session.source_url) return session.source_url;
-    if (rink?.source_url) return rink.source_url;
-    return null;
+  function getDirectRegLink(session: Session, rink: Rink | undefined): string | null {
+  if (session.source_url) return session.source_url;
+  if (rink?.source_url) return rink.source_url;
+  if (rink?.website) return rink.website.startsWith("http") ? rink.website : `https://${rink.website}`;
+  return null;
+}
+
+function getRegInstructions(session: Session, rink: Rink | undefined): string {
+  const source = rink?.source_type || session.source;
+  switch (source) {
+    case "quickscores":
+      return "Book via QuickScores. Click Register to open the rink page, then find the date/time.";
+    case "daysmart":
+      return "Book via DaySmart Rec. Use the date/time to locate the session.";
+    case "bondsports":
+      return "Book via Bond Sports. Walk-ins may also be accepted.";
+    case "activityreg":
+      return "Book via the municipal site. Cottonwood allows walk-in or online pre-pay.";
+    case "southdavis":
+      return "South Davis is walk-in ($7/player). No online reservation needed.";
+    case "website":
+      return "See the rink site for registration or walk-in details.";
+    default:
+      return "Click Register to visit the rink's booking site.";
   }
+}
+
+function formatDateLong(dateStr: string) {
+  return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+function formatTime12(t: string) {
+  const [h, m] = t.split(":").map(Number);
+  const date = new Date();
+  date.setHours(h, m, 0, 0);
+  return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+}
+
+function getSessionCopyText(session: Session, rink: Rink | undefined) {
+  const rinkName = rink?.name || session.rink_name || "Rink";
+  const date = formatDateLong(session.date);
+  const time = `${formatTime12(session.start_time)} - ${formatTime12(session.end_time)}`;
+  return `${rinkName} - ${session.session_type}\n${date}, ${time}`;
+}
+
+function getRegLink(session: Session, rink: Rink | undefined): string | null {
+  if (rink?.website) return rink.website.startsWith("http") ? rink.website : `https://${rink.website}`;
+  if (session.source_url) return session.source_url;
+  if (rink?.source_url) return rink.source_url;
+  return null;
+}
 
   const selectedRinkName = useMemo(() => {
     if (!selectedRink) return null;
@@ -333,7 +381,8 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
                     </p>
                     <div className="space-y-2">
                       {fallbackSessions.map((s) => {
-                        const regLink = getRegLink(s);
+                        const rink = rinkMap[s.rink_id];
+                        const regLink = getRegLink(s, rink);
                         return (
                           <div
                             key={s.id}
@@ -357,7 +406,7 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-0.5 text-[11px] font-medium text-blue-400 hover:text-blue-300 transition ml-auto"
                                 >
-                                  <ExternalLink className="w-3.5 h-3.5" />
+                                  Register <ExternalLink className="w-3.5 h-3.5" />
                                 </a>
                               )}
                             </div>
@@ -405,7 +454,10 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
               {grouped[date]
                 .sort((a, b) => (a.start_24 || a.start_time).localeCompare(b.start_24 || b.start_time))
                 .map((s) => {
-                  const regLink = getRegLink(s);
+                  const rink = rinkMap[s.rink_id];
+                  const regLink = getRegLink(s, rink);
+                  const directLink = getDirectRegLink(s, rink);
+                  const copyText = getSessionCopyText(s, rink);
 
                   return (
                     <div
@@ -445,9 +497,9 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-0.5 text-[11px] font-medium text-blue-400 hover:text-blue-300 transition ml-auto"
+                            className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-400 hover:text-blue-300 transition ml-auto"
                           >
-                            <ExternalLink className="w-3.5 h-3.5" />
+                            <ExternalLink className="w-3.5 h-3.5" /> Register
                           </a>
                         )}
                       </div>
@@ -496,15 +548,39 @@ export default function SessionsPage({ initialSessions, rinks, refreshing }: Pro
                           )}
 
                           {regLink && (
-                            <a
-                              href={regLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1.5 mt-1 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-medium border border-blue-500/30 hover:bg-blue-500/30 transition"
-                            >
-                              <span className="inline-flex items-center gap-1.5"><ExternalLink className="w-3.5 h-3.5" /> Register / More info</span>
-                            </a>
+                            <>
+                              <p className="text-xs text-zinc-400 leading-relaxed">
+                                {getRegInstructions(s, rink)}
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <a
+                                  href={directLink || regLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-500 text-white text-xs font-medium hover:bg-blue-400 transition"
+                                >
+                                  <ExternalLink className="w-3.5 h-3.5" />
+                                  {directLink ? "Register for this session" : "Register / More info"}
+                                </a>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigator.clipboard.writeText(copyText);
+                                  }}
+                                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-800 text-zinc-300 text-xs font-medium border border-zinc-700 hover:bg-zinc-700 transition"
+                                  title="Copy date, time, and rink"
+                                >
+                                  <Copy className="w-3.5 h-3.5" /> Copy details
+                                </button>
+                              </div>
+                            </>
+                          )}
+
+                          {!regLink && (
+                            <p className="text-xs text-zinc-500">
+                              No registration link available. Check the rink website.
+                            </p>
                           )}
                         </div>
                       )}
