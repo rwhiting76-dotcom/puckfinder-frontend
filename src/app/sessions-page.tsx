@@ -493,11 +493,11 @@ function getRegLink(session: Session, rink: Rink | undefined): string | null {
 
                         {regLink && (
                           <a
-                            href={regLink}
+                            href={getDirectRegLink(s, rink) || regLink}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-400 hover:text-blue-300 transition ml-auto"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-500 text-white text-[11px] font-medium hover:bg-blue-400 transition ml-auto"
                           >
                             <ExternalLink className="w-3.5 h-3.5" /> Register
                           </a>
